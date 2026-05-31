@@ -1,0 +1,90 @@
+sa4_code,sa4_name,date,unemployed
+101,Capital Region,2026-03-01,4.4
+102,Central Coast,2026-03-01,9.2
+103,New South Wales - Central West,2026-03-01,4.6
+104,Coffs Harbour - Grafton,2026-03-01,3.2
+105,Far West and Orana,2026-03-01,2.5
+106,Hunter Valley exc Newcastle,2026-03-01,7.7
+107,Illawarra,2026-03-01,8.3
+108,Mid North Coast,2026-03-01,5.0
+109,Murray,2026-03-01,3.0
+110,New England and North West,2026-03-01,5.0
+111,Newcastle and Lake Macquarie,2026-03-01,11.1
+112,Richmond - Tweed,2026-03-01,5.7
+113,Riverina,2026-03-01,3.3
+114,Southern Highlands and Shoalhaven,2026-03-01,3.2
+115,Sydney - Baulkham Hills and Hawkesbury,2026-03-01,6.7
+116,Sydney - Blacktown,2026-03-01,14.2
+117,Sydney - City and Inner South,2026-03-01,11.3
+118,Sydney - Eastern Suburbs,2026-03-01,5.7
+119,Sydney - Inner South West,2026-03-01,18.8
+120,Sydney - Inner West,2026-03-01,7.8
+121,Sydney - North Sydney and Hornsby,2026-03-01,10.3
+122,Sydney - Northern Beaches,2026-03-01,4.9
+123,Sydney - Outer South West,2026-03-01,9.4
+124,Sydney - Outer West and Blue Mountains,2026-03-01,8.4
+125,Sydney - Parramatta,2026-03-01,18.9
+126,Sydney - Ryde,2026-03-01,5.5
+127,Sydney - South West,2026-03-01,16.5
+128,Sydney - Sutherland,2026-03-01,3.9
+201,Ballarat,2026-03-01,3.8
+202,Bendigo,2026-03-01,3.4
+203,Geelong,2026-03-01,7.3
+204,Hume,2026-03-01,3.4
+205,Latrobe - Gippsland,2026-03-01,6.8
+206,Melbourne - Inner,2026-03-01,25.7
+207,Melbourne - Inner East,2026-03-01,10.3
+208,Melbourne - Inner South,2026-03-01,11.1
+209,Melbourne - North East,2026-03-01,17.1
+210,Melbourne - North West,2026-03-01,15.0
+211,Melbourne - Outer East,2026-03-01,12.4
+212,Melbourne - South East,2026-03-01,33.4
+213,Melbourne - West,2026-03-01,36.1
+214,Mornington Peninsula,2026-03-01,8.0
+215,Victoria - North West,2026-03-01,2.9
+216,Shepparton,2026-03-01,2.9
+217,Warrnambool and South West,2026-03-01,2.0
+301,Brisbane - East,2026-03-01,5.0
+302,Brisbane - North,2026-03-01,5.0
+303,Brisbane - South,2026-03-01,9.5
+304,Brisbane - West,2026-03-01,3.7
+305,Brisbane Inner City,2026-03-01,7.3
+306,Cairns,2026-03-01,7.1
+307,Darling Downs - Maranoa,2026-03-01,2.4
+308,Central Queensland,2026-03-01,5.9
+309,Gold Coast,2026-03-01,11.0
+310,Ipswich,2026-03-01,12.0
+311,Logan - Beaudesert,2026-03-01,12.7
+312,Mackay - Isaac - Whitsunday,2026-03-01,3.4
+313,Moreton Bay - North,2026-03-01,8.1
+314,Moreton Bay - South,2026-03-01,5.3
+315,Queensland - Outback,2026-03-01,2.9
+316,Sunshine Coast,2026-03-01,7.5
+317,Toowoomba,2026-03-01,3.5
+318,Townsville,2026-03-01,6.6
+319,Wide Bay,2026-03-01,7.7
+401,Adelaide - Central and Hills,2026-03-01,6.0
+402,Adelaide - North,2026-03-01,14.2
+403,Adelaide - South,2026-03-01,8.4
+404,Adelaide - West,2026-03-01,5.1
+405,Barossa - Yorke - Mid North,2026-03-01,2.5
+406,South Australia - Outback,2026-03-01,2.6
+407,South Australia - South East,2026-03-01,3.6
+501,Bunbury,2026-03-01,4.1
+502,Mandurah,2026-03-01,3.1
+503,Perth - Inner,2026-03-01,4.1
+504,Perth - North East,2026-03-01,8.2
+505,Perth - North West,2026-03-01,16.7
+506,Perth - South East,2026-03-01,16.4
+507,Perth - South West,2026-03-01,14.1
+508,Western Australia - Outback (North and South),2026-03-01,6.6
+509,Western Australia - Wheat Belt,2026-03-01,2.5
+510,Western Australia - Outback (North),2026-03-01,3.9
+511,Western Australia - Outback (South),2026-03-01,2.7
+601,Hobart,2026-03-01,6.5
+602,Launceston and North East,2026-03-01,3.3
+603,Tasmania - South East,2026-03-01,0.9
+604,Tasmania - West and North West,2026-03-01,2.7
+701,Darwin,2026-03-01,3.3
+702,Northern Territory - Outback,2026-03-01,3.6
+801,Australian Capital Territory(a),2026-03-01,12.0

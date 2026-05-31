@@ -1,0 +1,136 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Unemployed Persons by State: Monthly Totals (2012-2025)",
+    "subtitle": "Derived from SA4 regional data - SA4 prefix encodes state. Hover to compare.",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 400,
+  "autosize": {"type": "fit", "contains": "padding"},
+  "config": {
+    "background": "transparent",
+    "view": {"stroke": "transparent"},
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+    "legend": {"labelColor": "#a0998a", "titleColor": "#c8c0b0"}
+  },
+  "layer": [
+    {
+      "description": "2012 data start marker rule",
+      "data": {"values": [{"x": "2012-01-01"}]},
+      "mark": {"type": "rule", "color": "#a0998a", "opacity": 0.5, "strokeDash": [4, 3], "strokeWidth": 1.5},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"}
+      }
+    },
+    {
+      "description": "2012 data start label",
+      "data": {"values": [{"x": "2012-01-01", "y": 280, "label": "Data from Jan 2012"}]},
+      "mark": {"type": "text", "color": "#a0998a", "opacity": 0.7, "fontSize": 10, "fontStyle": "italic", "align": "left", "dx": 6},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"},
+        "y": {"field": "y", "type": "quantitative"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "description": "COVID band",
+      "data": {"values": [{"start": "2020-03-01", "end": "2021-06-30"}]},
+      "mark": {"type": "rect", "opacity": 0.08, "color": "#d4a843"},
+      "encoding": {
+        "x": {"field": "start", "type": "temporal"},
+        "x2": {"field": "end"}
+      }
+    },
+    {
+      "description": "COVID label",
+      "data": {"values": [{"x": "2020-09-01", "y": 295, "label": "COVID-19"}]},
+      "mark": {"type": "text", "color": "#d4a843", "opacity": 0.8, "fontSize": 10, "fontWeight": "600", "align": "center"},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"},
+        "y": {"field": "y", "type": "quantitative"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "description": "Main state lines",
+      "data": {
+        "url": "data/sa4_unemployment_long.csv",
+        "format": {
+          "type": "csv",
+          "parse": {"date": "date", "unemployed": "number", "sa4_code": "string"}
+        }
+      },
+      "transform": [
+        {"filter": "datum.unemployed != null"},
+        {"calculate": "substring(datum.sa4_code, 0, 1)", "as": "state_prefix"},
+        {
+          "calculate": "datum.state_prefix === '1' ? 'NSW' : datum.state_prefix === '2' ? 'VIC' : datum.state_prefix === '3' ? 'QLD' : datum.state_prefix === '4' ? 'SA' : datum.state_prefix === '5' ? 'WA' : datum.state_prefix === '6' ? 'TAS' : datum.state_prefix === '7' ? 'NT' : datum.state_prefix === '8' ? 'ACT' : 'Other'",
+          "as": "state"
+        },
+        {"filter": "datum.state !== 'Other'"},
+        {
+          "aggregate": [{"op": "sum", "field": "unemployed", "as": "state_unemployed"}],
+          "groupby": ["state", "date"]
+        }
+      ],
+      "params": [
+        {
+          "name": "hover_state",
+          "select": {"type": "point", "fields": ["state"], "on": "mouseover"},
+          "bind": "legend"
+        }
+      ],
+      "mark": {"type": "line", "strokeWidth": 2, "point": false},
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal",
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "values": ["2012-01-01", "2013-01-01", "2014-01-01", "2015-01-01", "2016-01-01", "2017-01-01", "2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01", "2022-01-01", "2023-01-01", "2024-01-01", "2025-01-01", "2026-01-01"]
+          }
+        },
+        "y": {
+          "field": "state_unemployed",
+          "type": "quantitative",
+          "axis": {"title": "Unemployed Persons ('000)", "format": ",.0f"}
+        },
+        "color": {
+          "field": "state",
+          "type": "nominal",
+          "scale": {
+            "domain": ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
+            "range": ["#4a7fb5", "#c94040", "#d4a843", "#6abf8a", "#b07fc4", "#e8834a", "#5bb8c4", "#a0998a"]
+          },
+          "legend": {"title": "State / Territory"}
+        },
+        "opacity": {
+          "condition": {"param": "hover_state", "value": 1},
+          "value": 0.15
+        },
+        "strokeWidth": {
+          "condition": {"param": "hover_state", "value": 3},
+          "value": 1.5
+        },
+        "tooltip": [
+          {"field": "date", "type": "temporal", "title": "Date", "format": "%b %Y"},
+          {"field": "state", "type": "nominal", "title": "State"},
+          {"field": "state_unemployed", "type": "quantitative", "title": "Unemployed ('000)", "format": ",.1f"}
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "How Australia's Workforce is Split: Full-time, Part-time & Unemployed",
+    "subtitle": "Drag the slider to see how the composition has changed year by year since 1999",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": 340,
+  "height": 340,
+  "config": {
+    "background": "transparent",
+    "view": {"stroke": "transparent"},
+    "legend": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "labelFontSize": 12,
+      "orient": "right"
+    }
+  },
+  "data": {
+    "url": "data/h5_labour_force.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "date": "date",
+        "full_time_employment": "number",
+        "part_time_employment": "number",
+        "unemployment": "number"
+      }
+    }
+  },
+  "params": [
+    {
+      "name": "year_select",
+      "value": 2024,
+      "bind": {
+        "input": "range",
+        "min": 1999,
+        "max": 2025,
+        "step": 1,
+        "name": "Select Year: "
+      }
+    }
+  ],
+  "transform": [
+    {"filter": "datum.full_time_employment != null && datum.part_time_employment != null && datum.unemployment != null"},
+    {"calculate": "year(datum.date)", "as": "year"},
+    {"filter": "datum.year == year_select"},
+    {
+      "aggregate": [
+        {"op": "mean", "field": "full_time_employment", "as": "avg_ft"},
+        {"op": "mean", "field": "part_time_employment", "as": "avg_pt"},
+        {"op": "mean", "field": "unemployment", "as": "avg_unemployed"}
+      ]
+    },
+    {
+      "fold": ["avg_ft", "avg_pt", "avg_unemployed"],
+      "as": ["category_key", "value"]
+    },
+    {
+      "calculate": "datum.category_key === 'avg_ft' ? 'Full-time employed' : datum.category_key === 'avg_pt' ? 'Part-time employed' : 'Unemployed'",
+      "as": "label"
+    },
+    {
+      "joinaggregate": [{"op": "sum", "field": "value", "as": "total"}]
+    },
+    {
+      "calculate": "datum.value / datum.total * 100",
+      "as": "pct"
+    },
+    {
+      "calculate": "format(round(datum.pct * 10) / 10, '.1f') + '%'",
+      "as": "pct_label"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "arc",
+        "innerRadius": 90,
+        "outerRadius": 160,
+        "padAngle": 0.02,
+        "cornerRadius": 3
+      },
+      "encoding": {
+        "theta": {
+          "field": "pct",
+          "type": "quantitative",
+          "stack": true
+        },
+        "color": {
+          "field": "label",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Full-time employed", "Part-time employed", "Unemployed"],
+            "range": ["#4a7fb5", "#d4a843", "#c94040"]
+          },
+          "legend": {"title": "Labour Force Status", "symbolSize": 120}
+        },
+        "tooltip": [
+          {"field": "label", "type": "nominal", "title": "Category"},
+          {"field": "pct", "type": "quantitative", "title": "Share (%)", "format": ".1f"},
+          {"field": "value", "type": "quantitative", "title": "Persons ('000)", "format": ",.0f"}
+        ]
+      }
+    },
+    {
+      "description": "Centre label part-time percentage",
+      "transform": [
+        {"filter": "datum.label === 'Part-time employed'"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "fontSize": 28,
+        "fontWeight": "600",
+        "color": "#d4a843",
+        "font": "Cormorant Garamond, Georgia, serif"
+      },
+      "encoding": {
+        "text": {"field": "pct_label", "type": "nominal"},
+        "theta": {"value": 0},
+        "radius": {"value": 0}
+      }
+    },
+    {
+      "description": "Centre sublabel part-time descriptor",
+      "transform": [
+        {"filter": "datum.label === 'Part-time employed'"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "fontSize": 11,
+        "color": "#a0998a",
+        "dy": 26
+      },
+      "encoding": {
+        "text": {"value": "part-time"},
+        "theta": {"value": 0},
+        "radius": {"value": 0}
+      }
+    }
+  ]
+}

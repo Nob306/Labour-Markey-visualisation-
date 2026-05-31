@@ -1,0 +1,192 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Labour Market Indicator Heatmap (1997\u20132025)",
+    "subtitle": "Each metric is normalised to its own mean. Red = above average stress, Blue = below average (stable). Each row = one indicator.",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 280,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "view": {
+      "stroke": "transparent"
+    },
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+    "legend": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0"
+    }
+  },
+  "data": {
+    "url": "data/h5_labour_force.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "date": "date",
+        "unemployment_rate": "number",
+        "participation_rate": "number",
+        "employment_growth_yoy": "number",
+        "average_hours_worked": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "filter": "datum.date >= datetime(1997, 0, 1)"
+    },
+    {
+      "filter": "datum.unemployment_rate != null"
+    },
+    {
+      "calculate": "year(datum.date)",
+      "as": "year"
+    },
+    {
+      "fold": [
+        "unemployment_rate",
+        "participation_rate",
+        "employment_growth_yoy",
+        "average_hours_worked"
+      ],
+      "as": [
+        "metric_key",
+        "metric_value"
+      ]
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "mean",
+          "field": "metric_value",
+          "as": "metric_mean"
+        },
+        {
+          "op": "stdev",
+          "field": "metric_value",
+          "as": "metric_stdev"
+        }
+      ],
+      "groupby": [
+        "metric_key"
+      ]
+    },
+    {
+      "calculate": "(datum.metric_value - datum.metric_mean) / datum.metric_stdev",
+      "as": "z_score"
+    },
+    {
+      "calculate": "datum.metric_key === 'unemployment_rate' ? 'Unemployment Rate' : datum.metric_key === 'participation_rate' ? 'Participation Rate' : datum.metric_key === 'employment_growth_yoy' ? 'Employment Growth (YoY)' : 'Avg Hours Worked'",
+      "as": "metric_label"
+    },
+    {
+      "calculate": "datum.metric_key === 'unemployment_rate' ? -datum.z_score : datum.z_score",
+      "as": "stress_score"
+    }
+  ],
+  "mark": {
+    "type": "rect"
+  },
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "axis": {
+        "title": null,
+        "labelAngle": -45,
+        "labelFontSize": 10
+      }
+    },
+    "y": {
+      "field": "metric_label",
+      "type": "nominal",
+      "axis": {
+        "title": null,
+        "labelFontSize": 11
+      }
+    },
+    "color": {
+      "field": "stress_score",
+      "type": "quantitative",
+      "scale": {
+        "scheme": "redblue",
+        "domain": [
+          -2.5,
+          2.5
+        ],
+        "reverse": true
+      },
+      "legend": {
+        "title": "Stress Score (z-score)",
+        "gradientLength": 180,
+        "labelColor": "#a0998a",
+        "titleColor": "#c8c0b0"
+      }
+    },
+    "tooltip": [
+      {
+        "field": "year",
+        "type": "ordinal",
+        "title": "Year"
+      },
+      {
+        "field": "metric_label",
+        "type": "nominal",
+        "title": "Indicator"
+      },
+      {
+        "field": "metric_value",
+        "type": "quantitative",
+        "title": "Raw Value",
+        "format": ".2f"
+      },
+      {
+        "field": "stress_score",
+        "type": "quantitative",
+        "title": "Stress Score (z)",
+        "format": ".2f"
+      }
+    ],
+    "stroke": {
+      "condition": {
+        "param": "hover_year",
+        "value": "#e8e0d0"
+      },
+      "value": "transparent"
+    },
+    "strokeWidth": {
+      "condition": {
+        "param": "hover_year",
+        "value": 2
+      },
+      "value": 0
+    }
+  },
+  "params": [
+    {
+      "name": "hover_year",
+      "select": {
+        "type": "point",
+        "fields": [
+          "year"
+        ],
+        "on": "mouseover"
+      }
+    }
+  ]
+}

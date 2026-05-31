@@ -1,0 +1,152 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Labour Stress: Unemployment Rate vs Job Vacancies Ratio (1997-2025)",
+    "subtitle": "When vacancies rise but unemployment stays elevated, structural mismatch emerges",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 380,
+  "autosize": {"type": "fit", "contains": "padding"},
+  "config": {
+    "background": "transparent",
+    "view": {"stroke": "transparent"},
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+    "legend": {"labelColor": "#a0998a", "titleColor": "#c8c0b0", "orient": "top-left"}
+  },
+  "layer": [
+    {
+      "description": "GFC band",
+      "data": {"values": [{"start": "2008-09-01", "end": "2009-06-30"}]},
+      "mark": {"type": "rect", "opacity": 0.1, "color": "#c94040"},
+      "encoding": {
+        "x": {"field": "start", "type": "temporal"},
+        "x2": {"field": "end"}
+      }
+    },
+    {
+      "description": "COVID band",
+      "data": {"values": [{"start": "2020-03-01", "end": "2021-03-31"}]},
+      "mark": {"type": "rect", "opacity": 0.1, "color": "#d4a843"},
+      "encoding": {
+        "x": {"field": "start", "type": "temporal"},
+        "x2": {"field": "end"}
+      }
+    },
+    {
+      "description": "Unemployment rate line",
+      "data": {
+        "url": "data/h5_labour_force.csv",
+        "format": {"type": "csv", "parse": {"date": "date", "unemployment_rate": "number"}}
+      },
+      "transform": [
+        {"filter": "datum.date >= datetime(1997, 0, 1)"},
+        {"filter": "datum.unemployment_rate != null"}
+      ],
+      "mark": {"type": "line", "strokeWidth": 2.5, "color": "#c94040"},
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal",
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "values": [
+              "1997-01-01","1999-01-01","2001-01-01","2003-01-01",
+              "2005-01-01","2007-01-01","2009-01-01","2011-01-01",
+              "2013-01-01","2015-01-01","2017-01-01","2019-01-01",
+              "2021-01-01","2023-01-01","2025-01-01"
+            ]
+          },
+          "scale": {"domain": ["1997-01-01", "2025-12-31"]}
+        },
+        "y": {
+          "field": "unemployment_rate",
+          "type": "quantitative",
+          "axis": {"title": "Unemployment Rate (%)"},
+          "scale": {"zero": false}
+        },
+        "tooltip": [
+          {"field": "date", "type": "temporal", "title": "Date", "format": "%b %Y"},
+          {"field": "unemployment_rate", "type": "quantitative", "title": "Unemployment Rate (%)", "format": ".1f"}
+        ]
+      }
+    },
+    {
+      "description": "Vacancies to labour force ratio line",
+      "data": {
+        "url": "data/h5_labour_force.csv",
+        "format": {"type": "csv", "parse": {"date": "date", "vacancies_to_lf_ratio": "number"}}
+      },
+      "transform": [
+        {"filter": "datum.date >= datetime(1997, 0, 1)"},
+        {"filter": "datum.vacancies_to_lf_ratio != null"}
+      ],
+      "mark": {"type": "line", "strokeWidth": 2.5, "color": "#4a7fb5", "strokeDash": [5, 3]},
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal",
+          "scale": {"domain": ["1997-01-01", "2025-12-31"]}
+        },
+        "y": {
+          "field": "vacancies_to_lf_ratio",
+          "type": "quantitative",
+          "axis": {"title": "Vacancies / LF (%)", "titleColor": "#4a7fb5"}
+        },
+        "tooltip": [
+          {"field": "date", "type": "temporal", "title": "Date", "format": "%b %Y"},
+          {"field": "vacancies_to_lf_ratio", "type": "quantitative", "title": "Vacancies / LF (%)", "format": ".2f"}
+        ]
+      }
+    },
+    {
+      "description": "GFC label",
+      "data": {"values": [{"x": "2009-01-01", "label": "GFC"}]},
+      "mark": {"type": "text", "color": "#ff6b6b", "fontSize": 10, "fontWeight": "600", "align": "center", "dy": -160},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "description": "COVID label",
+      "data": {"values": [{"x": "2020-08-01", "label": "COVID-19"}]},
+      "mark": {"type": "text", "color": "#ffd166", "fontSize": 10, "fontWeight": "600", "align": "center", "dy": -160},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "description": "Post-COVID annotation line 1",
+      "data": {"values": [{"x": "2021-06-01", "label": "Post-COVID: vacancies surge,"}]},
+      "mark": {"type": "text", "color": "#d4a843", "fontSize": 10, "fontStyle": "italic", "align": "left", "dx": 6, "dy": 24, "limit": 260},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "description": "Post-COVID annotation line 2",
+      "data": {"values": [{"x": "2021-06-01", "label": "unemployment stays elevated"}]},
+      "mark": {"type": "text", "color": "#d4a843", "fontSize": 10, "fontStyle": "italic", "align": "left", "dx": 6, "dy": 37, "limit": 260},
+      "encoding": {
+        "x": {"field": "x", "type": "temporal"},
+        "text": {"field": "label"}
+      }
+    }
+  ],
+  "resolve": {"scale": {"y": "independent"}}
+}

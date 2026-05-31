@@ -1,0 +1,140 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Where Unemployment Concentrates: SA4 Regions (March 2026)",
+    "subtitle": "Outer metropolitan Sydney and Melbourne dominate, not the outback. Hover any region for details.",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 560,
+  "autosize": {"type": "fit", "contains": "padding"},
+  "config": {
+    "background": "transparent",
+    "view": {"stroke": "transparent"},
+    "legend": {"labelColor": "#a0998a", "titleColor": "#c8c0b0"}
+  },
+  "projection": {"type": "mercator"},
+  "layer": [
+    {
+      "description": "Choropleth fill layer",
+      "data": {
+        "url": "data/sa4_topo.json",
+        "format": {"type": "topojson", "feature": "SA4_2021_AUST_GDA2020"}
+      },
+      "transform": [
+        {
+          "lookup": "properties.SA4_CODE21",
+          "from": {
+            "data": {
+              "url": "data/sa4_unemployment_latest.csv",
+              "format": {
+                "type": "csv",
+                "parse": {"unemployed": "number", "sa4_code": "string"}
+              }
+            },
+            "key": "sa4_code",
+            "fields": ["sa4_name", "unemployed", "date"]
+          }
+        }
+      ],
+      "params": [
+        {"name": "highlight", "select": {"type": "point", "on": "mouseover"}}
+      ],
+      "mark": {"type": "geoshape", "stroke": "#1a1e26", "strokeWidth": 0.5},
+      "encoding": {
+        "color": {
+          "field": "unemployed",
+          "type": "quantitative",
+          "scale": {"scheme": "reds", "domain": [0, 40]},
+          "legend": {
+            "title": "Unemployed ('000)",
+            "gradientLength": 180,
+            "labelColor": "#a0998a",
+            "titleColor": "#c8c0b0"
+          }
+        },
+        "stroke": {
+          "condition": {"param": "highlight", "empty": false, "value": "#e8e0d0"},
+          "value": "#1a1e26"
+        },
+        "strokeWidth": {
+          "condition": {"param": "highlight", "empty": false, "value": 2},
+          "value": 0.5
+        },
+        "tooltip": [
+          {"field": "sa4_name", "type": "nominal", "title": "Region"},
+          {"field": "unemployed", "type": "quantitative", "title": "Unemployed ('000)", "format": ".1f"},
+          {"field": "date", "type": "temporal", "title": "Month", "format": "%b %Y"}
+        ]
+      }
+    },
+    {
+      "description": "Annotation dots - pinned to key regions",
+      "data": {
+        "values": [
+          {"lon": 150.82, "lat": -33.87, "label": "Sydney South-West\n18.8k unemployed", "align": "left", "dy": -8},
+          {"lon": 144.90, "lat": -37.82, "label": "Melbourne's West\n36.1k unemployed", "align": "right", "dy": -8},
+          {"lon": 153.02, "lat": -27.55, "label": "Brisbane South", "align": "left", "dy": -8}
+        ]
+      },
+      "mark": {"type": "circle", "size": 40, "color": "#e8e0d0", "opacity": 0.9},
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude": {"field": "lat", "type": "quantitative"}
+      }
+    },
+    {
+      "description": "Annotation text labels",
+      "data": {
+        "values": [
+          {"lon": 155.82, "lat": -33.87, "label": "Sydney South-West: 18.8k", "align": "left", "dx": 30, "dy": 0},
+          {"lon": 113.86, "lat": -31.95, "label": "Perth metro", "align": "right", "dx": -8, "dy": 0},
+          {"lon": 157.02, "lat": -27.45, "label": "Brisbane South: 14.5k", "align": "left", "dx": 30, "dy": 0},
+          {"lon": 144.90, "lat": -38.92, "label": "Melbourne's West: 36.1k", "align": "right", "dx": -8, "dy": 28}
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#e8e0d0",
+        "fontSize": 9.5,
+        "fontWeight": "600",
+        "opacity": 0.9,
+        "background": "transparent"
+      },
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude": {"field": "lat", "type": "quantitative"},
+        "text": {"field": "label"},
+        "align": {"field": "align"},
+        "dx": {"field": "dx"},
+        "dy": {"field": "dy"}
+      }
+    },
+    {
+      "description": "Regional callout box - Melbourne hotspot update",
+      "data": {
+        "values": [
+          {"lon": 152.5, "lat": -40.5, "label": "Melbourne's west has the highest level\nof unemployment at 36.1 thousand"}
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#d4a843",
+        "fontSize": 10,
+        "fontStyle": "italic",
+        "opacity": 0.85,
+        "align": "left",
+        "lineBreak": "\n"
+      },
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude": {"field": "lat", "type": "quantitative"},
+        "text": {"field": "label"}
+      }
+    }
+  ]
+}

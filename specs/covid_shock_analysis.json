@@ -1,0 +1,188 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "The COVID Labour Shock (2018-2023): Multi-Metric Impact",
+    "subtitle": "Unemployment spiked while participation collapsed - masking the true depth of job loss",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "config": {
+    "background": "transparent",
+    "view": {"stroke": "transparent"},
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+    "legend": {"labelColor": "#a0998a", "titleColor": "#c8c0b0"}
+  },
+  "vconcat": [
+    {
+      "width": "container",
+      "height": 180,
+      "autosize": {"type": "fit", "contains": "padding"},
+      "data": {
+        "url": "data/h5_labour_force.csv",
+        "format": {
+          "type": "csv",
+          "parse": {"date": "date", "unemployment_rate": "number"}
+        }
+      },
+      "transform": [
+        {"filter": "datum.date >= datetime(2018, 0, 1) && datum.date <= datetime(2023, 11, 30)"},
+        {"filter": "datum.unemployment_rate != null"}
+      ],
+      "layer": [
+        {
+          "data": {"values": [{"start": "2020-03-15", "end": "2021-06-30"}]},
+          "mark": {"type": "rect", "opacity": 0.18, "color": "#d4a843"},
+          "encoding": {
+            "x": {"field": "start", "type": "temporal"},
+            "x2": {"field": "end"}
+          }
+        },
+        {
+          "mark": {
+            "type": "area",
+            "line": true,
+            "strokeWidth": 2.5,
+            "color": "#c94040",
+            "opacity": 0.15
+          },
+          "encoding": {
+            "x": {
+              "field": "date",
+              "type": "temporal",
+              "axis": {"title": null, "labels": false}
+            },
+            "y": {
+              "field": "unemployment_rate",
+              "type": "quantitative",
+              "scale": {
+                "domain": [2, 8.5],
+                "zero": false,
+                "nice": false
+              },
+              "axis": {
+                "title": "Unemployment Rate (%)",
+                "titleColor": "#c94040",
+                "values": [2, 4, 6, 8]
+              }
+            },
+            "y2": {"datum": 2},
+            "tooltip": [
+              {"field": "date", "type": "temporal", "title": "Date", "format": "%b %Y"},
+              {"field": "unemployment_rate", "type": "quantitative", "title": "Unemployment Rate (%)", "format": ".1f"}
+            ]
+          }
+        },
+        {
+          "data": {"values": [{"x": "2020-08-01", "label": "COVID-19 Lockdowns"}]},
+          "mark": {
+            "type": "text",
+            "color": "#d4a843",
+            "fontSize": 10,
+            "fontWeight": "600",
+            "align": "left",
+            "dx": 4
+          },
+          "encoding": {
+            "x": {"field": "x", "type": "temporal"},
+            "y": {"value": 15},
+            "text": {"field": "label"}
+          }
+        },
+        {
+          "data": {"values": [{"x": "2020-09-01", "label": "Peak: 7.5% Jul 2020"}]},
+          "mark": {
+            "type": "text",
+            "color": "#c94040",
+            "fontSize": 10,
+            "fontWeight": "600",
+            "align": "left",
+            "dx": 6
+          },
+          "encoding": {
+            "x": {"field": "x", "type": "temporal"},
+            "y": {"value": 30},
+            "text": {"field": "label"}
+          }
+        }
+      ]
+    },
+    {
+      "width": "container",
+      "height": 180,
+      "autosize": {"type": "fit", "contains": "padding"},
+      "data": {
+        "url": "data/h5_labour_force.csv",
+        "format": {
+          "type": "csv",
+          "parse": {"date": "date", "participation_rate": "number"}
+        }
+      },
+      "transform": [
+        {"filter": "datum.date >= datetime(2018, 0, 1) && datum.date <= datetime(2023, 11, 30)"},
+        {"filter": "datum.participation_rate != null"}
+      ],
+      "layer": [
+        {
+          "data": {"values": [{"start": "2020-03-15", "end": "2021-06-30"}]},
+          "mark": {"type": "rect", "opacity": 0.18, "color": "#d4a843"},
+          "encoding": {
+            "x": {"field": "start", "type": "temporal"},
+            "x2": {"field": "end"}
+          }
+        },
+        {
+          "mark": {"type": "area", "strokeWidth": 2.5, "color": "#4a7fb5", "opacity": 0.15, "line": true},
+          "encoding": {
+            "x": {"field": "date", "type": "temporal", "axis": {"title": null, "format": "%b %Y"}},
+            "y": {
+              "field": "participation_rate",
+              "type": "quantitative",
+              "axis": {"title": "Participation Rate (%)", "titleColor": "#4a7fb5"},
+              "scale": {"domain": [60, 68]}
+            },
+            "y2": {"datum": 60},
+            "tooltip": [
+              {"field": "date", "type": "temporal", "title": "Date", "format": "%b %Y"},
+              {"field": "participation_rate", "type": "quantitative", "title": "Participation Rate (%)", "format": ".1f"}
+            ]
+          }
+        },
+        {
+          "data": {"values": [{"x": "2020-05-01", "y": 62.7, "label": "Drop to 62.7% workers stopped looking for jobs entirely"}]},
+          "mark": {"type": "text", "color": "#4a7fb5", "fontSize": 10, "fontStyle": "italic", "align": "left", "dx": 30},
+          "encoding": {
+            "x": {"field": "x", "type": "temporal"},
+            "y": {"field": "y", "type": "quantitative"},
+            "text": {"field": "label"}
+          }
+        },
+        {
+          "description": "Pre-COVID baseline reference line",
+          "data": {"values": [{}]},
+          "mark": {"type": "rule", "color": "#6abf8a", "opacity": 0.5, "strokeDash": [4, 3], "strokeWidth": 1.2},
+          "encoding": {"y": {"datum": 66.0}}
+        },
+        {
+          "description": "Baseline label",
+          "data": {"values": [{"x": "2018-04-01", "y": 66.3, "label": "Pre-COVID baseline ~66%"}]},
+          "mark": {"type": "text", "color": "#6abf8a", "fontSize": 9, "opacity": 0.8, "align": "left"},
+          "encoding": {
+            "x": {"field": "x", "type": "temporal"},
+            "y": {"field": "y", "type": "quantitative"},
+            "text": {"field": "label"}
+          }
+        }
+      ]
+    }
+  ]
+}

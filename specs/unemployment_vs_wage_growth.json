@@ -1,0 +1,411 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Unemployment Rate vs Wage Growth (1999–2025)",
+    "subtitle": "Have wages kept up with labour market recovery?",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+
+  "width": "container",
+  "height": 380,
+
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+
+  "config": {
+    "background": "transparent",
+
+    "view": {
+      "stroke": "transparent"
+    },
+
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11,
+      "showMinLabel": true
+    },
+
+    "legend": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "labelFontSize": 11
+    }
+  },
+
+  "layer": [
+
+    {
+      "description": "GFC shaded band 2008-2009",
+
+      "mark": {
+        "type": "rect",
+        "opacity": 0.12,
+        "color": "#c94040"
+      },
+
+      "data": {
+        "values": [
+          {
+            "start": "2008-09-01",
+            "end": "2009-06-30",
+            "event": "GFC"
+          }
+        ]
+      },
+
+      "encoding": {
+        "x": {
+          "field": "start",
+          "type": "temporal"
+        },
+
+        "x2": {
+          "field": "end"
+        },
+
+        "color": {
+          "value": "#c94040"
+        }
+      }
+    },
+
+    {
+      "description": "COVID shaded band 2020",
+
+      "mark": {
+        "type": "rect",
+        "opacity": 0.12,
+        "color": "#d4a843"
+      },
+
+      "data": {
+        "values": [
+          {
+            "start": "2020-03-01",
+            "end": "2021-03-31",
+            "event": "COVID-19"
+          }
+        ]
+      },
+
+      "encoding": {
+        "x": {
+          "field": "start",
+          "type": "temporal"
+        },
+
+        "x2": {
+          "field": "end"
+        },
+
+        "color": {
+          "value": "#d4a843"
+        }
+      }
+    },
+
+    {
+      "description": "GFC label",
+
+      "mark": {
+        "type": "text",
+        "color": "#c94040",
+        "opacity": 0.7,
+        "fontSize": 10,
+        "dy": -150,
+        "fontStyle": "italic"
+      },
+
+      "data": {
+        "values": [
+          {
+            "x": "2009-01-01",
+            "label": "GFC"
+          }
+        ]
+      },
+
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+
+    {
+      "description": "COVID label",
+
+      "mark": {
+        "type": "text",
+        "color": "#d4a843",
+        "opacity": 0.7,
+        "fontSize": 10,
+        "dy": -150,
+        "fontStyle": "italic"
+      },
+
+      "data": {
+        "values": [
+          {
+            "x": "2020-06-01",
+            "label": "COVID-19"
+          }
+        ]
+      },
+
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+
+    {
+      "description": "Unemployment rate line from H5",
+
+      "data": {
+        "url": "data/h5_labour_force.csv",
+
+        "format": {
+          "type": "csv",
+          "parse": {
+            "date": "date",
+            "unemployment_rate": "number"
+          }
+        }
+      },
+
+      "transform": [
+        {
+          "filter": "datum.date >= datetime(1999, 0, 1)"
+        },
+        {
+          "filter": "datum.unemployment_rate != null"
+        }
+      ],
+
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#c94040"
+      },
+
+      "encoding": {
+
+        "x": {
+          "field": "date",
+          "type": "temporal",
+
+          "scale": {
+            "domain": [
+              "1999-01-01",
+              "2026-01-01"
+            ]
+          },
+
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "labelAngle": 0,
+
+            "values": [
+              "1999-01-01",
+              "2000-01-01",
+              "2001-01-01",
+              "2002-01-01",
+              "2003-01-01",
+              "2004-01-01",
+              "2005-01-01",
+              "2006-01-01",
+              "2007-01-01",
+              "2008-01-01",
+              "2009-01-01",
+              "2010-01-01",
+              "2011-01-01",
+              "2012-01-01",
+              "2013-01-01",
+              "2014-01-01",
+              "2015-01-01",
+              "2016-01-01",
+              "2017-01-01",
+              "2018-01-01",
+              "2019-01-01",
+              "2020-01-01",
+              "2021-01-01",
+              "2022-01-01",
+              "2023-01-01",
+              "2024-01-01",
+              "2025-01-01",
+              "2026-01-01"
+            ]
+          }
+        },
+
+        "y": {
+          "field": "unemployment_rate",
+          "type": "quantitative",
+
+          "axis": {
+            "title": "Unemployment Rate (%)",
+            "titleColor": "#c94040"
+          }
+        },
+
+        "tooltip": [
+          {
+            "field": "date",
+            "type": "temporal",
+            "title": "Date",
+            "format": "%b %Y"
+          },
+
+          {
+            "field": "unemployment_rate",
+            "type": "quantitative",
+            "title": "Unemployment Rate (%)",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+
+    {
+      "description": "Wage growth line from H4 (right axis)",
+
+      "data": {
+        "url": "data/h4_wage_price_index.csv",
+
+        "format": {
+          "type": "csv",
+          "parse": {
+            "date": "date",
+            "wage_growth_yoy": "number"
+          }
+        }
+      },
+
+      "transform": [
+        {
+          "filter": "datum.date >= datetime(1999, 0, 1)"
+        },
+        {
+          "filter": "datum.wage_growth_yoy != null"
+        }
+      ],
+
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#d4a843",
+        "strokeDash": [4, 2]
+      },
+
+      "encoding": {
+
+        "x": {
+          "field": "date",
+          "type": "temporal",
+
+          "scale": {
+            "domain": [
+              "1999-01-01",
+              "2026-01-01"
+            ]
+          },
+
+          "axis": {
+            "format": "%Y",
+            "labelAngle": 0,
+
+            "values": [
+              "1999-01-01",
+              "2000-01-01",
+              "2001-01-01",
+              "2002-01-01",
+              "2003-01-01",
+              "2004-01-01",
+              "2005-01-01",
+              "2006-01-01",
+              "2007-01-01",
+              "2008-01-01",
+              "2009-01-01",
+              "2010-01-01",
+              "2011-01-01",
+              "2012-01-01",
+              "2013-01-01",
+              "2014-01-01",
+              "2015-01-01",
+              "2016-01-01",
+              "2017-01-01",
+              "2018-01-01",
+              "2019-01-01",
+              "2020-01-01",
+              "2021-01-01",
+              "2022-01-01",
+              "2023-01-01",
+              "2024-01-01",
+              "2025-01-01",
+              "2026-01-01"
+            ]
+          }
+        },
+
+        "y": {
+          "field": "wage_growth_yoy",
+          "type": "quantitative",
+
+          "axis": {
+            "title": "Year-ended Wage Growth (%)",
+            "titleColor": "#d4a843"
+          },
+
+          "scale": {
+            "zero": false
+          }
+        },
+
+        "tooltip": [
+          {
+            "field": "date",
+            "type": "temporal",
+            "title": "Date",
+            "format": "%b %Y"
+          },
+
+          {
+            "field": "wage_growth_yoy",
+            "type": "quantitative",
+            "title": "Wage Growth (%)",
+            "format": ".2f"
+          }
+        ]
+      }
+    }
+  ],
+
+  "resolve": {
+    "scale": {
+      "y": "independent"
+    }
+  }
+}

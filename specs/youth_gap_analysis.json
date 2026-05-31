@@ -1,0 +1,325 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+
+  "title": {
+    "text": "1 in 3 Australian Jobs is Now Part-Time (1997-2025)",
+    "subtitle": "More part-time work = less pay, fewer entitlements, and weaker bargaining power - a key reason wages have stagnated",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+
+  "width": "container",
+  "height": 360,
+
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+
+  "resolve": {
+    "scale": {
+      "y": "shared"
+    }
+  },
+
+  "config": {
+    "background": "transparent",
+    "view": { "stroke": "transparent" },
+
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+
+    "legend": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0c0"
+    }
+  },
+
+  "data": {
+    "url": "data/h5_labour_force.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "date": "date",
+        "part_time_employment": "number",
+        "employment": "number",
+        "full_time_employment": "number"
+      }
+    }
+  },
+
+  "transform": [
+    { "filter": "datum.date >= datetime(1997, 0, 1)" },
+    { "filter": "datum.employment != null && datum.part_time_employment != null" },
+    {
+      "calculate": "datum.part_time_employment / datum.employment * 100",
+      "as": "part_time_share"
+    },
+    {
+      "window": [
+        {
+          "op": "mean",
+          "field": "part_time_share",
+          "as": "rolling_avg"
+        }
+      ],
+      "frame": [-5, 6]
+    }
+  ],
+
+  "layer": [
+
+    {
+      "description": "COVID band",
+      "data": {
+        "values": [
+          { "start": "2020-03-01", "end": "2021-06-30" }
+        ]
+      },
+      "mark": {
+        "type": "rect",
+        "opacity": 0.1,
+        "color": "#d4a843"
+      },
+      "encoding": {
+        "x": { "field": "start", "type": "temporal" },
+        "x2": { "field": "end" }
+      }
+    },
+
+    {
+      "description": "33% threshold reference line",
+      "mark": {
+        "type": "rule",
+        "color": "#6abf8a",
+        "opacity": 0.5,
+        "strokeDash": [4, 3],
+        "strokeWidth": 1.2
+      },
+      "encoding": {
+        "y": { "datum": 33.3 }
+      }
+    },
+
+    {
+      "description": "1 in 3 label",
+      "data": {
+        "values": [
+          {
+            "x": "1998-01-01",
+            "y": 34.8,
+            "label": "1 in 3 jobs threshold (33.3%)"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#6abf8a",
+        "fontSize": 9,
+        "opacity": 0.8,
+        "align": "left"
+      },
+      "encoding": {
+        "x": { "field": "x", "type": "temporal" },
+        "y": { "field": "y", "type": "quantitative" },
+        "text": { "field": "label" }
+      }
+    },
+
+    {
+      "description": "Area fill under rolling average",
+      "mark": {
+        "type": "area",
+        "opacity": 0.12,
+        "color": "#d4a843"
+      },
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal",
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "values": [
+              "1997-01-01",
+              "1999-01-01",
+              "2001-01-01",
+              "2003-01-01",
+              "2005-01-01",
+              "2007-01-01",
+              "2009-01-01",
+              "2011-01-01",
+              "2013-01-01",
+              "2015-01-01",
+              "2017-01-01",
+              "2019-01-01",
+              "2021-01-01",
+              "2023-01-01",
+              "2025-01-01"
+            ]
+          },
+          "scale": {
+            "domain": ["1997-01-01", "2026-06-01"]
+          }
+        },
+
+        "y": {
+          "field": "rolling_avg",
+          "type": "quantitative",
+          "scale": {
+            "domain": [25, 40]
+          },
+          "axis": {
+            "title": "Part-time Share of Employment (%)",
+            "format": ".0f"
+          }
+        }
+      }
+    },
+
+    {
+      "description": "Raw monthly line — faint",
+      "mark": {
+        "type": "line",
+        "strokeWidth": 1.0,
+        "color": "#4a7fb5",
+        "opacity": 0.3
+      },
+      "encoding": {
+        "x": { "field": "date", "type": "temporal" },
+        "y": {
+          "field": "part_time_share",
+          "type": "quantitative",
+          "scale": { "domain": [25, 40] }
+        }
+      }
+    },
+
+    {
+      "description": "Rolling average — main line",
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.8,
+        "color": "#d4a843"
+      },
+      "encoding": {
+        "x": { "field": "date", "type": "temporal" },
+        "y": {
+          "field": "rolling_avg",
+          "type": "quantitative",
+          "scale": { "domain": [25, 40] }
+        },
+        "tooltip": [
+          { "field": "date", "type": "temporal", "title": "Date", "format": "%b %Y" },
+          { "field": "part_time_share", "type": "quantitative", "title": "Part-time Share (%)", "format": ".1f" },
+          { "field": "rolling_avg", "type": "quantitative", "title": "12-month Average (%)", "format": ".1f" }
+        ]
+      }
+    },
+
+    {
+      "description": "Structural shift rule at 2012",
+      "data": {
+        "values": [{ "x": "2012-01-01" }]
+      },
+      "mark": {
+        "type": "rule",
+        "color": "#c94040",
+        "strokeDash": [4, 3],
+        "opacity": 0.7,
+        "strokeWidth": 1.5
+      },
+      "encoding": {
+        "x": { "field": "x", "type": "temporal" }
+      }
+    },
+
+    {
+      "description": "Structural shift annotation",
+      "data": {
+        "values": [
+          {
+            "x": "2012-02-01",
+            "y": 35.5,
+            "label": "Post-GFC: part-time share locks above 30% permanently"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#c94040",
+        "opacity": 0.85,
+        "fontSize": 10,
+        "fontStyle": "italic",
+        "align": "left",
+        "dx": 4
+      },
+      "encoding": {
+        "x": { "field": "x", "type": "temporal" },
+        "y": { "field": "y", "type": "quantitative" },
+        "text": { "field": "label" }
+      }
+    },
+
+    {
+      "description": "1997 annotation",
+      "data": {
+        "values": [
+          {
+            "x": "1997-06-01",
+            "y": 27.1,
+            "label": "25% in 1997"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#a0998a",
+        "opacity": 0.8,
+        "fontSize": 10,
+        "fontStyle": "italic",
+        "align": "left"
+      },
+      "encoding": {
+        "x": { "field": "x", "type": "temporal" },
+        "y": { "field": "y", "type": "quantitative" },
+        "text": { "field": "label" }
+      }
+    },
+
+    {
+      "description": "2025 annotation",
+      "data": {
+        "values": [
+          {
+            "x": "2024-01-01",
+            "y": 32.1,
+            "label": "~31% today"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#a0998a",
+        "opacity": 0.8,
+        "fontSize": 10,
+        "fontStyle": "italic",
+        "align": "left"
+      },
+      "encoding": {
+        "x": { "field": "x", "type": "temporal" },
+        "y": { "field": "y", "type": "quantitative" },
+        "text": { "field": "label" }
+      }
+    }
+  ]
+}

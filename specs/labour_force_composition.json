@@ -1,0 +1,89 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Composition of Australian Employment (1997-2025)",
+    "subtitle": "Full-time vs part-time employment in thousands of persons",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 360,
+  "autosize": {"type": "fit", "contains": "padding"},
+  "config": {
+    "background": "transparent",
+    "view": {"stroke": "transparent"},
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+    "legend": {"labelColor": "#a0998a", "titleColor": "#c8c0b0", "orient": "top-left"}
+  },
+  "data": {
+    "url": "data/h5_labour_force.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "date": "date",
+        "full_time_employment": "number",
+        "part_time_employment": "number"
+      }
+    }
+  },
+  "transform": [
+    {"filter": "datum.date >= datetime(1997, 0, 1)"},
+    {"filter": "datum.full_time_employment != null"},
+    {
+      "fold": ["full_time_employment", "part_time_employment"],
+      "as": ["employment_type", "persons"]
+    },
+    {
+      "calculate": "datum.employment_type === 'full_time_employment' ? 'Full-time' : 'Part-time'",
+      "as": "type_label"
+    }
+  ],
+  "mark": {"type": "area", "opacity": 0.85},
+  "encoding": {
+    "x": {
+      "field": "date",
+      "type": "temporal",
+      "axis": {
+        "title": null,
+        "format": "%Y",
+        "values": [
+          "1997-01-01","1999-01-01","2001-01-01","2003-01-01","2005-01-01",
+          "2007-01-01","2009-01-01","2011-01-01","2013-01-01","2015-01-01",
+          "2017-01-01","2019-01-01","2021-01-01","2023-01-01","2025-01-01"
+        ]
+      },
+      "scale": {"domain": ["1997-01-01", "2026-06-01"]}
+    },
+    "y": {
+      "field": "persons",
+      "type": "quantitative",
+      "stack": "zero",
+      "axis": {"title": "Employed Persons ('000)", "format": ",.0f"}
+    },
+    "color": {
+      "field": "type_label",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Full-time", "Part-time"],
+        "range": ["#4a7fb5", "#d4a843"]
+      },
+      "legend": {"title": "Employment Type"}
+    },
+    "tooltip": [
+      {"field": "date", "type": "temporal", "title": "Date", "format": "%b %Y"},
+      {"field": "type_label", "type": "nominal", "title": "Type"},
+      {"field": "persons", "type": "quantitative", "title": "Persons ('000)", "format": ",.0f"}
+    ],
+    "order": {"field": "type_label", "sort": "descending"}
+  }
+}

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Australia's Labour Market Wages, Work & Regional Inequality</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Archivo:wght@300;400;500;600&family=Archivo+Narrow:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <style>
+    :root {
+      --bg:           #0f1117;
+      --bg-section:   #13161f;
+      --bg-card:      #181c27;
+      --border:       #252936;
+      --text-primary: #e8e0d0;
+      --text-muted:   #8a8278;
+      --text-dim:     #5a5650;
+      --gold:         #d4a843;
+      --red:          #c94040;
+      --blue:         #4a7fb5;
+      --green:        #6abf8a;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'Archivo', system-ui, sans-serif;
+      --font-label:   'Archivo Narrow', system-ui, sans-serif;
+      --max-width:    1100px;
+      --section-gap:  7rem;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .topbar { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .topbar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .topbar-unit { color: var(--gold); font-weight: 500; }
+    .hero { padding: 6rem 0 5rem; border-bottom: 1px solid var(--border); }
+    .hero-eyebrow {
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.4rem;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 5vw, 4.4rem);
+      font-weight: 600;
+      line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 1.6rem;
+      letter-spacing: -0.01em;
+    }
+    .hero h1 em { font-style: italic; color: var(--gold); }
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 640px;
+      line-height: 1.65;
+      font-weight: 300;
+      margin-bottom: 3rem;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      padding: 1.4rem 1.6rem;
+      border-radius: 2px;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-label {
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .section { padding: var(--section-gap) 0; border-bottom: 1px solid var(--border); }
+    .section-header { display: flex; align-items: flex-start; gap: 2rem; margin-bottom: 3.5rem; }
+    .section-number {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--border);
+      line-height: 1;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .section-eyebrow {
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 600;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .section-intro {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      line-height: 1.75;
+    }
+    .chart-grid { display: grid; gap: 2rem; }
+    .chart-grid-2 { grid-template-columns: 1fr 1fr; }
+    .chart-grid-1 { grid-template-columns: 1fr; }
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem 2rem 1.5rem;
+      position: relative;
+    }
+    .chart-card.full-width { grid-column: 1 / -1; }
+    .chart-meta {
+      margin-top: 1.2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+    }
+    .chart-insight {
+      margin-top: 1rem;
+      padding: 0.8rem 1.2rem;
+      background: rgba(212, 168, 67, 0.06);
+      border-left: 3px solid var(--gold);
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .chart-insight strong { color: var(--gold); font-weight: 500; }
+    .legend-pills { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .legend-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-line { width: 22px; height: 3px; flex-shrink: 0; }
+    .pull-quote {
+      border-left: 4px solid var(--gold);
+      padding: 1.5rem 2rem;
+      margin: 3rem 0;
+      background: var(--bg-card);
+    }
+    .pull-quote p {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .pull-quote cite {
+      display: block;
+      margin-top: 0.75rem;
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-style: normal;
+    }
+    .donut-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    .donut-explainer {
+      padding: 1rem 0;
+    }
+    .donut-explainer h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.8rem;
+    }
+    .donut-explainer p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .donut-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+    }
+    .donut-stat-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .donut-stat-row .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .footer { padding: 4rem 0; border-top: 1px solid var(--border); }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; }
+    .footer-heading {
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .footer-body { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+    .footer-body a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
+    .footer-body a:hover { color: var(--text-primary); }
+    .footer-bottom {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-family: var(--font-label);
+      letter-spacing: 0.05em;
+    }
+    .viz { width: 100%; }
+    @media (max-width: 760px) {
+      .chart-grid-2 { grid-template-columns: 1fr; }
+      .donut-layout { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .hero h1 { font-size: 2.2rem; }
+      .section-header { flex-direction: column; gap: 0.5rem; }
+      .section-number { font-size: 2.5rem; }
+      .footer-bottom { flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topbar">
+    <div class="container">
+      <div class="topbar-inner">
+        <span>FIT2179 Data Visualisation 2</span>
+        <span><span class="topbar-unit">Monash University</span> &nbsp;·&nbsp; Semester 1, 2026</span>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Australian Labour Market · 1997 – 2025</p>
+      <h1>Wages, Work, and<br /><em>Who Gets Left Behind</em></h1>
+      <p class="hero-subtitle">
+        Over nearly three decades, Australia's labour market has been reshaped by globalisation,
+        two recessions, a pandemic, and a wages stagnation crisis. This visualisation traces the
+        structural changes in how Australians work and whether their pay has kept up.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-value">7.5%</div>
+          <div class="stat-label">Peak unemployment rate July 2020</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">~32%</div>
+          <div class="stat-label">Part-time share of employment by 2015</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">~2%</div>
+          <div class="stat-label">Decade-long average wage growth (2012–2022)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">87</div>
+          <div class="stat-label">SA4 regions tracked for regional inequality</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECTION 01 -->
+  <section class="section" id="big-picture">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <div class="section-title-block">
+          <p class="section-eyebrow">National Overview</p>
+          <h2 class="section-title">Wages and Unemployment:<br />A Thirty-Year Divergence</h2>
+          <p class="section-intro">
+            When unemployment is high, workers lose bargaining power and wages stagnate.
+            When unemployment falls, wages should recover. But since the GFC, that relationship has
+            broken down - unemployment fell steadily from 2012 to 2019, yet wages barely moved.
+            This "decoupling" is the central labour market puzzle of modern Australia.
+          </p>
+        </div>
+      </div>
+      <div class="legend-pills">
+        <span class="legend-pill"><span class="legend-line" style="background:#c94040;"></span>Unemployment rate</span>
+        <span class="legend-pill"><span class="legend-line" style="background:#d4a843; border-top: 2px dashed #d4a843; height:0;width:22px;"></span>Year-ended wage growth</span>
+        <span class="legend-pill"><span class="legend-dot" style="background:#c94040; opacity:0.3; width:16px; height:12px; border-radius:2px;"></span>GFC period</span>
+        <span class="legend-pill"><span class="legend-dot" style="background:#d4a843; opacity:0.3; width:16px; height:12px; border-radius:2px;"></span>COVID period</span>
+      </div>
+      <div class="chart-card">
+        <div id="viz-1" class="viz"></div>
+        <div class="chart-insight">
+          <strong>Key insight:</strong> Wage growth tracked closely with unemployment movements through the 1990s
+          and early 2000s. After the GFC, unemployment fell from its 2012 peak of ~5.8% down to 5% by 2019
+          yet wages growth flatlined near 2%, well below its historical 3–4% range. The relationship broke.
+        </div>
+        <div class="chart-meta">Sources: RBA Table H5 (Labour Force, ABS) · RBA Table H4 (Wage Price Index, ABS) · 1999–2025</div>
+      </div>
+      <div class="pull-quote">
+        <p>"Australia experienced a decade of near-full employment with near-stagnant wages - an economic
+        anomaly that reshaped the social contract between employer and employee."</p>
+        <cite>Derived from RBA &amp; ABS Labour Market Data, 2012–2022</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02 -->
+  <section class="section" id="composition">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <div class="section-title-block">
+          <p class="section-eyebrow">Structural Labour Market Change</p>
+          <h2 class="section-title">The Casualisation of Work:<br />Full-time vs Part-time Employment</h2>
+          <p class="section-intro">
+            One reason wages have stagnated is structural: the workforce has shifted toward
+            part-time and casual employment. Part-time workers typically earn less, have fewer
+            entitlements, and wield less bargaining power. As the part-time share of employment
+            has grown, the average worker's leverage has declined. Drag the slider to watch the
+            shift happen year by year.
+          </p>
+        </div>
+      </div>
+      <div class="chart-grid chart-grid-1" style="gap:2rem;">
+        <div class="chart-card">
+          <div id="viz-4" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> Part-time employment has grown faster than full-time in nearly every
+            period since 1997. The composition of the workforce has materially shifted more Australians
+            are now in jobs with reduced hours, lower earnings, and less security.
+          </div>
+          <div class="chart-meta">Source: RBA Table H5 (ABS Labour Force Survey) · 1997–2025</div>
+        </div>
+
+        <!-- DONUT CHART WITH SLIDER -->
+        <div class="chart-card">
+          <div class="donut-layout">
+            <div>
+              <div id="viz-5" class="viz"></div>
+            </div>
+            <div class="donut-explainer">
+              <h3>What does Australia's workforce look like in any given year?</h3>
+              <p>
+                Drag the slider to move through time from 1999 to 2025. Watch the gold
+                part-time slice grow steadily as full-time employment shrinks as a share
+                this is casualisation happening in real time.
+              </p>
+              <p>
+                By 2025, nearly one in three employed Australians works part-time. In 1999
+                it was closer to one in four.
+              </p>
+              <div class="donut-stat">
+                <div class="donut-stat-row"><span class="dot" style="background:#4a7fb5;"></span>Full-time employed</div>
+                <div class="donut-stat-row"><span class="dot" style="background:#d4a843;"></span>Part-time employed</div>
+                <div class="donut-stat-row"><span class="dot" style="background:#c94040;"></span>Unemployed (seeking work)</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> The full-time share has fallen from roughly 74% of the labour force
+            in 1999 to below 70% today. Part-time's share has grown correspondingly and with it, the
+            proportion of workers with reduced bargaining power, fewer entitlements, and lower average earnings.
+          </div>
+          <div class="chart-meta">Derived: full-time, part-time, and unemployed as % of total labour force. Source: RBA H5 · 1999–2025</div>
+        </div>
+
+        <div class="chart-card">
+          <div id="viz-2" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> The part-time share climbed from below 28% in 1997 to above 32%
+            by the mid-2010s, where it has since plateaued. The 12-month rolling average (gold line)
+            reveals the structural upward trend beneath the noise. Post-COVID, the share has remained
+            persistently elevated.
+          </div>
+          <div class="chart-meta">Derived metric: part-time employment ÷ total employment × 100. Source: RBA H5</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 03 -->
+  <section class="section" id="wages">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <div class="section-title-block">
+          <p class="section-eyebrow">Wage Stagnation</p>
+          <h2 class="section-title">Wages vs Productivity:<br />Where Did the Gains Go?</h2>
+          <p class="section-intro">
+            In a well-functioning labour market, productivity improvements translate into wage increases
+            over time. Workers become more efficient, firms earn more, and that surplus is shared.
+            Australia's labour market tells a different story: productivity has continued to grow, but
+            wage growth has consistently lagged behind since the mid-2000s.
+          </p>
+        </div>
+      </div>
+      <div class="chart-grid chart-grid-1">
+        <div class="chart-card full-width">
+          <div class="legend-pills">
+            <span class="legend-pill"><span class="legend-line" style="background:#4a7fb5;"></span>Productivity growth (YoY %)</span>
+            <span class="legend-pill"><span class="legend-line" style="background:#d4a843;"></span>Wage growth (YoY %)</span>
+            <span class="legend-pill"><span class="legend-line" style="background:#6abf8a; border-top: 2px dashed #6abf8a; height:0; width:22px;"></span>Private sector wages</span>
+          </div>
+          <div id="viz-7" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> The bars between the two lines represent the wage-productivity gap.
+            Red bars indicate periods where wages outpaced productivity rare and brief. Gold bars show
+            when productivity led the dominant condition since 2012. The gap represents value captured
+            by capital rather than labour.
+          </div>
+          <div class="chart-meta">Sources: RBA Table H4 Wage Price Index &amp; Non-farm Labour Productivity (ABS) · 1997–2025</div>
+        </div>
+        <div class="chart-card full-width">
+          <div id="viz-3" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> This chart pairs unemployment with job vacancies as a percentage of
+            the labour force. A rising vacancy ratio alongside persistent unemployment signals structural
+            mismatch employers cannot find workers with the right skills, while the unemployed cannot
+            access the available roles. Post-2021, this pattern became acute.
+          </div>
+          <div class="chart-meta">Sources: RBA Table H5 - Unemployment Rate &amp; Job Vacancies to Labour Force Ratio (ABS) · 1997–2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 04 -->
+  <section class="section" id="regions">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <div class="section-title-block">
+          <p class="section-eyebrow">Regional Inequality</p>
+          <h2 class="section-title">Not All Australians Feel<br />the Same Labour Market</h2>
+          <p class="section-intro">
+            National averages mask enormous regional variation. Unemployment in some Sydney
+            suburbs exceeds 15,000 persons, while affluent beachside areas record fewer than
+            5,000. The geographic concentration of unemployment is not random it tracks
+            closely with socioeconomic disadvantage, distance from major employment centres,
+            and industrial composition.
+          </p>
+        </div>
+      </div>
+      <div class="chart-grid chart-grid-1">
+        <div class="chart-card full-width">
+          <div id="viz-9" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> The choropleth reveals a strong urban–rural and inner–outer
+            metropolitan gradient. Melbourne's west records the highest absolute unemployed count
+            at 36,100 persons followed closely by Sydney's outer south-west. Remote and regional
+            areas appear lighter because their populations are smaller, not because unemployment is lower.
+          </div>
+          <div class="chart-meta">Source: ABS Labour Force Detailed, Table MRM1 SA4 Modelled Estimates (most recent available month)</div>
+        </div>
+        <div class="chart-card full-width">
+          <div id="viz-6" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> State-level aggregation from SA4 data shows NSW and VIC
+            dominate in absolute unemployment numbers due to population size. However, trend movements
+            reveal how smaller states like South Australia have experienced persistently elevated
+            unemployment relative to their workforce size. Hover a state name in the legend to isolate it.
+          </div>
+          <div class="chart-meta">Derived: SA4 codes aggregated to state by prefix digit. Source: ABS SA4 Modelled Estimates · 2012–2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 05 -->
+  <section class="section" id="covid">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <div class="section-title-block">
+          <p class="section-eyebrow">Economic Shocks &amp; Full-Cycle View</p>
+          <h2 class="section-title">COVID, Recovery, and the<br />Labour Market's Long Memory</h2>
+          <p class="section-intro">
+            The COVID-19 pandemic delivered Australia's largest peacetime labour market shock.
+            Unemployment surged to 7.5% in July 2020 levels not seen since the early 1990s.
+            The subsequent recovery was unusually rapid, but the shock revealed long-standing
+            structural vulnerabilities that persist to this day.
+          </p>
+        </div>
+      </div>
+      <div class="chart-grid chart-grid-1" style="gap:2rem;">
+        <div class="chart-card">
+          <div id="viz-8" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> Unemployment and participation rate moved in opposite directions
+            during the initial COVID shock many workers left the labour force entirely (discouraged
+            workers), masking the true depth of job loss. The rapid recovery in both metrics from late
+            2020 is historically unusual.
+          </div>
+          <div class="chart-meta">Source: RBA Table H5 ABS Labour Force Survey · 2018–2023</div>
+        </div>
+        <div class="chart-card full-width">
+          <div id="viz-10" class="viz"></div>
+          <div class="chart-insight">
+            <strong>Key insight:</strong> The heatmap normalises each indicator to its own mean (z-score),
+            allowing direct comparison across metrics with different scales. Red cells indicate elevated
+            stress (above-average unemployment, below-average hours and growth). The GFC (2008–2010)
+            and COVID (2020) stand out clearly as the two most stressed periods in the dataset.
+            The 2013–2019 stagnation period shows persistent mild stress across all indicators.
+          </div>
+          <div class="chart-meta">Derived: z-score normalisation per indicator. Unemployment inverted so red = stress throughout. Source: RBA H5</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-heading">About this visualisation</p>
+          <p class="footer-body">
+            This visualisation examines the Australian labour market between 1997 and 2025,
+            focusing on whether wage growth has kept pace with employment conditions, how the
+            composition of work has shifted, and where regional inequality is most acute.
+            It is designed for a general Australian audience with no assumed statistical knowledge.
+            The topic is of personal interest given its direct relevance to household living standards
+            and economic opportunity.
+            <br><br>
+            Generative AI (Claude by Anthropic) was used in the development of this visualisation to assist with Vega-Lite JSON specification structure, HTML and CSS layout code, and grammar review of narrative text. All analytical decisions, data selection, visualisation design choices, and storytelling were developed by the author. Data was sourced exclusively from the RBA and ABS.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Data Sources</p>
+          <p class="footer-body">
+            <strong style="color:var(--text-primary);">RBA Table H5</strong><br />
+            Labour Force - ABS (monthly, 1978–2025)<br />
+            <a href="https://www.rba.gov.au/statistics/tables/" target="_blank">rba.gov.au/statistics/tables</a><br /><br />
+            <strong style="color:var(--text-primary);">RBA Table H4</strong><br />
+            Labour Costs &amp; Productivity - ABS (quarterly, 1997–2025)<br />
+            <a href="https://www.rba.gov.au/statistics/tables/" target="_blank">rba.gov.au/statistics/tables</a><br /><br />
+            <strong style="color:var(--text-primary);">ABS MRM1</strong><br />
+            SA4 Modelled Unemployment Estimates (monthly, 2012–2025)<br />
+            <a href="https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/latest-release" target="_blank">abs.gov.au</a>
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Technical Notes</p>
+          <p class="footer-body">
+            Built with <strong style="color:var(--text-primary);">Vega-Lite v5</strong> and
+            <strong style="color:var(--text-primary);">Vega-Embed v6</strong>.<br /><br />
+            SA4 TopoJSON boundaries sourced from ABS ASGS 2021 (converted via Mapshaper).<br /><br />
+            RBA CSVs reformatted to ISO 8601 (YYYY-MM-DD) and header rows removed prior to use.
+            SA4 data transposed from wide to long format using pandas <code>melt()</code>.<br /><br />
+            AI tools were used for grammar review and code suggestions, as acknowledged per unit policy.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Author: Arnob Saha - FIT2179 Data Visualisation 2 - Monash University Clayton</span>
+        <span>Published: May 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const opt = {
+      actions: false,
+      renderer: "svg",
+      theme: "dark"
+    };
+
+    vegaEmbed("#viz-1",  "specs/unemployment_vs_wage_growth.json",    opt).catch(console.error);
+    vegaEmbed("#viz-2",  "specs/youth_gap_analysis.json",             opt).catch(console.error);
+    vegaEmbed("#viz-3",  "specs/underemployment_vs_unemployment.json", opt).catch(console.error);
+    vegaEmbed("#viz-4",  "specs/labour_force_composition.json",        opt).catch(console.error);
+    vegaEmbed("#viz-5",  "specs/hours_worked_vs_employment.json",      opt).catch(console.error);
+    vegaEmbed("#viz-6",  "specs/state_comparison.json",                opt).catch(console.error);
+    vegaEmbed("#viz-7",  "specs/wage_vs_productivity.json",            opt).catch(console.error);
+    vegaEmbed("#viz-8",  "specs/covid_shock_analysis.json",            opt).catch(console.error);
+    vegaEmbed("#viz-9",  "specs/sa4_choropleth_map.json",              opt).catch(console.error);
+    vegaEmbed("#viz-10", "specs/structural_shift_analysis.json",       opt).catch(console.error);
+  </script>
+</body>
+</html>

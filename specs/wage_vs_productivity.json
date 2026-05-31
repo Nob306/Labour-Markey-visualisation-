@@ -1,0 +1,512 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Wage Growth vs Labour Productivity (1997-2025)",
+    "subtitle": "Gold bars = productivity outpacing wages (value captured by capital - rare). Red bars = wages outpacing productivity.",
+    "color": "#e8e0d0",
+    "subtitleColor": "#a0998a",
+    "fontSize": 16,
+    "subtitleFontSize": 12,
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 380,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "view": {
+      "stroke": "transparent"
+    },
+    "axis": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "gridColor": "#22262e",
+      "tickColor": "#22262e",
+      "domainColor": "#33394a",
+      "labelFontSize": 11
+    },
+    "legend": {
+      "labelColor": "#a0998a",
+      "titleColor": "#c8c0b0",
+      "orient": "top-left"
+    }
+  },
+  "data": {
+    "url": "data/h4_wage_price_index.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "date": "date",
+        "wage_growth_yoy": "number",
+        "productivity_growth": "number",
+        "private_wage_growth_yoy": "number",
+        "unit_labour_costs": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "filter": "datum.date >= datetime(1999, 0, 1) && datum.date <= datetime(2025, 11, 31)"
+    },
+    {
+      "filter": "datum.wage_growth_yoy != null && datum.productivity_growth != null"
+    },
+    {
+      "calculate": "datum.wage_growth_yoy - datum.productivity_growth",
+      "as": "wage_productivity_gap"
+    }
+  ],
+  "layer": [
+    {
+      "description": "Zero line",
+      "mark": {
+        "type": "rule",
+        "color": "#a0998a",
+        "opacity": 0.4,
+        "strokeDash": [
+          3,
+          3
+        ]
+      },
+      "encoding": {
+        "y": {
+          "datum": 0
+        }
+      }
+    },
+    {
+      "description": "GFC band",
+      "data": {
+        "values": [
+          {
+            "start": "2008-09-01",
+            "end": "2009-06-30"
+          }
+        ]
+      },
+      "mark": {
+        "type": "rect",
+        "opacity": 0.1,
+        "color": "#c94040"
+      },
+      "encoding": {
+        "x": {
+          "field": "start",
+          "type": "temporal"
+        },
+        "x2": {
+          "field": "end"
+        }
+      }
+    },
+    {
+      "description": "GFC label",
+      "data": {
+        "values": [
+          {
+            "x": "2008-12-01",
+            "y": 9.5,
+            "label": "GFC"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#ff6b6b",
+        "fontSize": 10,
+        "fontWeight": "600",
+        "align": "center"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+    {
+      "description": "COVID band",
+      "data": {
+        "values": [
+          {
+            "start": "2020-03-01",
+            "end": "2021-03-31"
+          }
+        ]
+      },
+      "mark": {
+        "type": "rect",
+        "opacity": 0.1,
+        "color": "#d4a843"
+      },
+      "encoding": {
+        "x": {
+          "field": "start",
+          "type": "temporal"
+        },
+        "x2": {
+          "field": "end"
+        }
+      }
+    },
+    {
+      "description": "COVID label",
+      "data": {
+        "values": [
+          {
+            "x": "2020-07-01",
+            "y": 9.5,
+            "label": "COVID"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#ffd166",
+        "fontSize": 10,
+        "fontWeight": "600",
+        "align": "center"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+    {
+      "description": "Gap bars - colour encodes direction",
+      "mark": {
+        "type": "bar",
+        "opacity": 0.45
+      },
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal",
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "values": [
+              "1999-01-01",
+              "2000-01-01",
+              "2001-01-01",
+              "2002-01-01",
+              "2003-01-01",
+              "2004-01-01",
+              "2005-01-01",
+              "2006-01-01",
+              "2007-01-01",
+              "2008-01-01",
+              "2009-01-01",
+              "2010-01-01",
+              "2011-01-01",
+              "2012-01-01",
+              "2013-01-01",
+              "2014-01-01",
+              "2015-01-01",
+              "2016-01-01",
+              "2017-01-01",
+              "2018-01-01",
+              "2019-01-01",
+              "2020-01-01",
+              "2021-01-01",
+              "2022-01-01",
+              "2023-01-01",
+              "2024-01-01",
+              "2025-01-01"
+            ]
+          },
+          "scale": {
+            "domain": [
+              "1999-01-01",
+              "2025-12-31"
+            ]
+          }
+        },
+        "y": {
+          "field": "wage_productivity_gap",
+          "type": "quantitative"
+        },
+        "y2": {
+          "datum": 0
+        },
+        "color": {
+          "condition": {
+            "test": "datum.wage_productivity_gap >= 0",
+            "value": "#c94040"
+          },
+          "value": "#d4a843"
+        },
+        "tooltip": [
+          {
+            "field": "date",
+            "type": "temporal",
+            "title": "Date",
+            "format": "%b %Y"
+          },
+          {
+            "field": "wage_productivity_gap",
+            "type": "quantitative",
+            "title": "Wage minus Productivity Gap (%)",
+            "format": ".2f"
+          }
+        ]
+      }
+    },
+    {
+      "description": "Gap label annotation",
+      "data": {
+        "values": [
+          {
+            "x": "2015-01-01",
+            "y": -2.8,
+            "label": "Wages consistently outpacing productivity (2012-2019)"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#d4a843",
+        "fontSize": 10,
+        "fontStyle": "italic",
+        "align": "center"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+    {
+      "description": "Private sector wage growth - dashed line drawn BEFORE solid lines so it shows through",
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.0,
+        "color": "#6abf8a",
+        "strokeDash": [
+          6,
+          3
+        ],
+        "opacity": 0.9
+      },
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "private_wage_growth_yoy",
+          "type": "quantitative",
+          "axis": {
+            "title": "Year-ended Growth Rate (%)",
+            "format": ".1f"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "date",
+            "type": "temporal",
+            "title": "Date",
+            "format": "%b %Y"
+          },
+          {
+            "field": "private_wage_growth_yoy",
+            "type": "quantitative",
+            "title": "Private Wage Growth (%)",
+            "format": ".2f"
+          }
+        ]
+      }
+    },
+    {
+      "description": "Productivity growth line",
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#4a7fb5"
+      },
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "productivity_growth",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "date",
+            "type": "temporal",
+            "title": "Date",
+            "format": "%b %Y"
+          },
+          {
+            "field": "productivity_growth",
+            "type": "quantitative",
+            "title": "Productivity Growth (%)",
+            "format": ".2f"
+          }
+        ]
+      }
+    },
+    {
+      "description": "Wage growth line - drawn last so it sits on top",
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#d4a843",
+        "opacity": 0.75
+      },
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "wage_growth_yoy",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "date",
+            "type": "temporal",
+            "title": "Date",
+            "format": "%b %Y"
+          },
+          {
+            "field": "wage_growth_yoy",
+            "type": "quantitative",
+            "title": "Wage Growth (%)",
+            "format": ".2f"
+          },
+          {
+            "field": "wage_productivity_gap",
+            "type": "quantitative",
+            "title": "Wage minus Productivity (%)",
+            "format": ".2f"
+          }
+        ]
+      }
+    },
+    {
+      "description": "Manual legend - productivity",
+      "data": {
+        "values": [
+          {
+            "x": "1999-03-01",
+            "y": 9.2,
+            "label": "\u2014 Productivity growth"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#4a7fb5",
+        "fontSize": 10,
+        "align": "left"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+    {
+      "description": "Manual legend - wages",
+      "data": {
+        "values": [
+          {
+            "x": "1999-03-01",
+            "y": 8.7,
+            "label": "\u2014 Wage growth (total)"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#d4a843",
+        "fontSize": 10,
+        "align": "left"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+    {
+      "description": "Manual legend - private wages",
+      "data": {
+        "values": [
+          {
+            "x": "1999-03-01",
+            "y": 8.2,
+            "label": "- - Private sector wages"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "color": "#6abf8a",
+        "fontSize": 10,
+        "align": "left"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    }
+  ]
+}
