@@ -2,7 +2,7 @@
 
 An interactive data visualisation examining nearly three decades of the Australian labour market, built to answer a question with real relevance to household living standards: has pay kept up with work?
 
-**Live visualisation:** https://arnob306.github.io/Australian-Labour-Market-Visualisation-/
+**Live visualisation:** https://arnob306.github.io/Labour-Markey-visualisation-/
 
 ## Why This Project
 
